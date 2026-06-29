@@ -380,64 +380,45 @@ function seedLabels(store: Store, labels: GoogleSeedLabel[], fallbackEmail: stri
 }
 
 function seedMessages(store: Store, messages: GoogleSeedMessage[], fallbackEmail: string): void {
+  
   console.log("Google seedMessages called with", messages.length, "messages");
-
   const gs = getGoogleStore(store);
 
   for (const message of messages) {
     console.log("Seeding:", message.subject, message.user_email);
-
     const userEmail = message.user_email ?? fallbackEmail;
     ensureSystemLabels(gs, userEmail);
 
-    const existing = message.id ? gs.messages.findOneBy("gmail_id", message.id) : null;
-    console.log("Checking message ID:", message.id);
-    console.log("Existing record:", existing);
-    
-    if (existing) {
-      console.log("Duplicate detected. Skipping.");
-      continue;
-    }    
-    console.log("Calling createStoredMessage()");	
+    if (message.id && gs.messages.findOneBy("gmail_id", message.id)) continue;
 
-    try {
-      createStoredMessage(
-        gs,
-        {
-          gmail_id: message.id,
-          thread_id: message.thread_id,
-          user_email: userEmail,
-          raw: message.raw ?? null,
-          from: message.from,
-          to: message.to,
-          cc: message.cc ?? null,
-          bcc: message.bcc ?? null,
-          reply_to: message.reply_to ?? null,
-          subject: message.subject,
-          snippet: message.snippet,
-          body_text: message.body_text ?? null,
-          body_html: message.body_html ?? null,
-          label_ids: message.label_ids ?? ["INBOX", "UNREAD"],
-          date: message.date,
-          internal_date: message.internal_date,
-          message_id: message.message_id,
-          references: message.references ?? null,
-          in_reply_to: message.in_reply_to ?? null,
-        },
-        {
-          createMissingCustomLabels: true,
-        },
-      );
-
-      console.log("Inserted:", userEmail);
-    } catch (err) {
-      console.error("========================================");
-      console.error("FAILED TO INSERT MESSAGE");
-      console.error("Subject:", message.subject);
-      console.error("User:", userEmail);
-      console.error(err);
-      console.error("========================================");
-    }
+    createStoredMessage(
+      gs,
+      {
+        gmail_id: message.id,
+        thread_id: message.thread_id,
+        user_email: userEmail,
+        raw: message.raw ?? null,
+        from: message.from,
+        to: message.to,
+        cc: message.cc ?? null,
+        bcc: message.bcc ?? null,
+        reply_to: message.reply_to ?? null,
+        subject: message.subject,
+        snippet: message.snippet,
+        body_text: message.body_text ?? null,
+        body_html: message.body_html ?? null,
+        label_ids: message.label_ids ?? ["INBOX", "UNREAD"],
+        date: message.date,
+        internal_date: message.internal_date,
+        message_id: message.message_id,
+        references: message.references ?? null,
+        in_reply_to: message.in_reply_to ?? null,
+      },
+      {
+        createMissingCustomLabels: true,
+      },
+    );
+    console.log("Inserted:", userEmail);
   }
 }
 

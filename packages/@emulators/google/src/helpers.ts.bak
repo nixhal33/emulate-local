@@ -220,7 +220,6 @@ export function generateHistoryId(): string {
 
 export function getAuthenticatedEmail(c: Context): string | null {
   const authUser = c.get("authUser");
-  console.log("AUTH USER =", authUser);
   return authUser?.login ?? null;
 }
 
@@ -446,9 +445,6 @@ export function createStoredMessage(
     createMissingCustomLabels?: boolean;
   },
 ): GoogleMessage {
-  console.log("STEP 1 - createStoredMessage()");
-  console.log("User:", input.user_email);
-  console.log("Subject:", input.subject);
   ensureSystemLabels(gs, input.user_email);
 
   const parsedRaw = input.raw ? parseRawMessage(input.raw) : null;
@@ -502,7 +498,6 @@ export function createStoredMessage(
     });
 
   const historyId = generateHistoryId();
-  console.log("STEP 2 - inserting into gs.messages");
   const message = gs.messages.insert({
     gmail_id: gmailId,
     thread_id: threadId,
@@ -525,7 +520,6 @@ export function createStoredMessage(
     body_text: merged.body_text,
     body_html: merged.body_html,
   });
-  console.log("STEP 3 - inserted successfully:", message.gmail_id);
 
   replaceMessageAttachments(gs, message, parsedRaw?.attachments ?? []);
   recordHistoryEvents(gs, message.user_email, historyId, [
