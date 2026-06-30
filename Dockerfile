@@ -74,10 +74,4 @@ CMD node -e "fetch('http://127.0.0.1:4000').then(()=>process.exit(0)).catch(()=>
 # Start Emulator
 # ---------------------------------------------------------------------------
 
-CMD [
-  "node",
-  "packages/emulate/dist/index.js",
-  "start",
-  "--seed",
-  "emulate.config.yaml"
-]
+CMD ["node", "packages/emulate/dist/index.js", "start", "--seed", "emulate.config.yaml"]
