@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  emulate:
+    container_name: emulator-five
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: emulate:latest
+    restart: unless-stopped
+    ports:
+      - "4000:4000" # Google
+      - "4001:4001" # Apple
+      - "4002:4002" # Resend
+      - "4003:4003" # Stripe
+      - "4004:4004" # Twilio
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+    volumes:
+      - ./emulate.config.yaml:/app/emulate.config.yaml:ro
+    command:
+      ["node", "packages/emulate/dist/index.js", "start", "--seed", "emulate.config.yaml"]
+    healthcheck:
+      test:
+        ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000').then(()=>process.exit(0)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
