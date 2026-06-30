@@ -1,0 +1,17 @@
+node_modules
+
+.git
+
+.github
+
+dist
+
+coverage
+
+*.log
+
+.vscode
+
+.idea
+
+tmp
