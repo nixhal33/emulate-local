@@ -1,0 +1,27 @@
+# FIRST STAGE BUILD
+FROM node:24-bookworm-slim AS builder
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
+COPY . .
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
+
+# SECOND STAGE BUILD/RUNTIME BUILD
+FROM node:24-bookworm-slim
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
+COPY --from=builder /app /app
+ENV NODE_ENV=production
+ENV PORT=4000
+EXPOSE 4000
+EXPOSE 4001
+EXPOSE 4002
+EXPOSE 4003
+EXPOSE 4004
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+CMD node -e "fetch('http://127.0.0.1:4000').then(()=>process.exit(0)).catch(()=>process.exit(1))"
+CMD ["node", "packages/emulate/dist/index.js", "start", "--seed", "emulate.config.yaml"]
