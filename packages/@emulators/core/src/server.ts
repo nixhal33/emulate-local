@@ -2,6 +2,7 @@ import { Hono, cors } from "./http.js";
 import { Store } from "./store.js";
 import { WebhookDispatcher } from "./webhooks.js";
 import { createApiErrorHandler, createErrorHandler } from "./middleware/error-handler.js";
+import { renderLandingPage } from "./landing.js";
 import {
   authMiddleware,
   type AuthFallback,
@@ -90,6 +91,10 @@ export function createServer(plugin: ServicePlugin, options: ServerOptions = {})
   });
 
   plugin.register(app, store, webhooks, baseUrl, tokenMap);
+
+  app.get("/", (c) => {
+  return c.html(renderLandingPage());
+  });
 
   app.notFound((c) =>
     c.json(
