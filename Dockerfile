@@ -1,7 +1,6 @@
-# =============================================================================
-# Emulate - Multi-stage Docker Build
-# =============================================================================
-
+# ===========================
+# Stage 1 - Build
+# ===========================
 FROM node:24-bookworm-slim AS builder
 
 ENV PNPM_HOME="/pnpm"
@@ -11,29 +10,14 @@ RUN corepack enable
 
 WORKDIR /app
 
-# ---------------------------------------------------------------------------
-# Copy entire repository
-# ---------------------------------------------------------------------------
-
 COPY . .
 
-# ---------------------------------------------------------------------------
-# Install dependencies
-# ---------------------------------------------------------------------------
-
 RUN pnpm install --frozen-lockfile
-
-# ---------------------------------------------------------------------------
-# Build all packages
-# ---------------------------------------------------------------------------
-
 RUN pnpm build
 
-
-# =============================================================================
-# Runtime Image
-# =============================================================================
-
+# ===========================
+# Stage 2 - Runtime
+# ===========================
 FROM node:24-bookworm-slim
 
 ENV PNPM_HOME="/pnpm"
@@ -43,35 +27,26 @@ RUN corepack enable
 
 WORKDIR /app
 
-# ---------------------------------------------------------------------------
-# Copy everything from builder
-# ---------------------------------------------------------------------------
-
 COPY --from=builder /app /app
 
-# ---------------------------------------------------------------------------
-# Runtime configuration
-# ---------------------------------------------------------------------------
-
+# Runtime Environment
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
 ENV PORT=4000
+ENV PUBLIC_HOST=localhost
 
-# Expose all emulator ports
+# Expose Emulator Ports
 EXPOSE 4000
 EXPOSE 4001
 EXPOSE 4002
 EXPOSE 4003
 EXPOSE 4004
 
-# ---------------------------------------------------------------------------
-# Healthcheck
-# ---------------------------------------------------------------------------
+# Health Check
+HEALTHCHECK --interval=30s \
+            --timeout=5s \
+            --start-period=10s \
+            --retries=3 \
+CMD node -e "fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-CMD node -e "fetch('http://127.0.0.1:4000').then(()=>process.exit(0)).catch(()=>process.exit(1))"
-
-# ---------------------------------------------------------------------------
-# Start Emulator
-# ---------------------------------------------------------------------------
-
-CMD ["node", "packages/emulate/dist/index.js", "start", "--seed", "emulate.config.yaml"]
+CMD ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]

@@ -16,7 +16,9 @@ RUN corepack enable
 WORKDIR /app
 COPY --from=builder /app /app
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
 ENV PORT=4000
+ENV PUBLIC_HOST=localhost
 EXPOSE 4000
 EXPOSE 4001
 EXPOSE 4002
