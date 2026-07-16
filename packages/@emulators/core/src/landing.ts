@@ -15,11 +15,154 @@ interface Service {
   docs: string;
 
   dashboard: string;
+
+  apiExplorer: string;
 }
 
 const SERVICES: Service[] = [
-   ...
-]
+  {
+    id: "google",
+    name: "Google",
+    port: 4000,
+    color: "#4285F4",
+
+    description: "Google OAuth2, Gmail, Calendar & Drive Emulator",
+
+    features: [
+      "OAuth2",
+      "Gmail",
+      "Calendar",
+      "Drive",
+    ],
+
+    version: "v0.8.0",
+
+    status: "Healthy",
+
+    docs: "https://developers.google.com/",
+
+    dashboard:
+      "/o/oauth2/v2/auth?client_id=example-google-client.apps.googleusercontent.com&redirect_uri=http://localhost:3000/api/auth/callback/google&response_type=code",
+
+    apiExplorer: "/oauth2/v2/userinfo",
+  },
+
+  {
+    id: "apple",
+
+    name: "Apple",
+
+    port: 4001,
+
+    color: "#111111",
+
+    description: "Sign in with Apple Emulator",
+
+    features: [
+      "OAuth",
+      "OpenID",
+      "JWKS",
+    ],
+
+    version: "v0.8.0",
+
+    status: "Healthy",
+
+    docs: "https://developer.apple.com/documentation/signinwithapple",
+
+    dashboard:
+      "/auth/authorize?client_id=com.example.web&redirect_uri=http://localhost:3000/api/auth/callback/apple&response_type=code",
+
+    apiExplorer: "/.well-known/openid-configuration",
+  },
+
+  {
+    id: "resend",
+
+    name: "Resend",
+
+    port: 4002,
+
+    color: "#000000",
+
+    description: "Transactional Email Emulator",
+
+    features: [
+      "Emails",
+      "Inbox",
+      "Domains",
+      "Contacts",
+    ],
+
+    version: "v0.8.0",
+
+    status: "Healthy",
+
+    docs: "https://resend.com/docs",
+
+    dashboard: "/inbox",
+
+    apiExplorer: "/emails",
+  },
+
+  {
+    id: "stripe",
+
+    name: "Stripe",
+
+    port: 4003,
+
+    color: "#635BFF",
+
+    description: "Payments & Checkout Emulator",
+
+    features: [
+      "Customers",
+      "Products",
+      "Payments",
+      "Checkout",
+    ],
+
+    version: "v0.8.0",
+
+    status: "Healthy",
+
+    docs: "https://docs.stripe.com/api",
+
+    dashboard: "/",
+
+    apiExplorer: "/v1/products",
+  },
+
+  {
+    id: "twilio",
+
+    name: "Twilio",
+
+    port: 4004,
+
+    color: "#F22F46",
+
+    description: "Messaging, Verify & Calls Emulator",
+
+    features: [
+      "SMS",
+      "Verify",
+      "Calls",
+      "Inspector",
+    ],
+
+    version: "v0.8.0",
+
+    status: "Healthy",
+
+    docs: "https://www.twilio.com/docs",
+
+    dashboard: "/",
+
+    apiExplorer: "/2010-04-01/Accounts.json",
+  },
+];
 
 function renderHead(): string {
   return `
@@ -613,23 +756,30 @@ function renderFooter(): string {
 }
 
 function renderScripts(): string {
-  return `
+
+return `
+
 <script>
 
-function buildUrl(port){
-    return window.location.protocol + "//" +
-           window.location.hostname +
-           ":" + port;
+function buildUrl(port,path){
+
+    const protocol=window.location.protocol;
+
+    const host=window.location.hostname;
+
+    return protocol+"//"+host+":"+port+path;
+
 }
 
 document.querySelectorAll(".dashboard-btn").forEach(btn=>{
 
     btn.addEventListener("click",()=>{
 
-        const port = btn.dataset.port;
-        const dashboard = btn.dataset.dashboard || "";
+        const port=btn.dataset.port;
 
-        window.open(buildUrl(port)+dashboard,"_blank");
+        const dashboard=btn.dataset.dashboard;
+
+        window.open(buildUrl(port,dashboard),"_blank");
 
     });
 
@@ -639,13 +789,15 @@ document.querySelectorAll(".copy-btn").forEach(btn=>{
 
     btn.addEventListener("click",async()=>{
 
-        const url = buildUrl(btn.dataset.port);
+        const port=btn.dataset.port;
+
+        const url=buildUrl(port,"");
 
         await navigator.clipboard.writeText(url);
 
-        const original = btn.innerHTML;
+        const original=btn.innerHTML;
 
-        btn.innerHTML="✅ Copied";
+        btn.innerHTML="Copied ✓";
 
         setTimeout(()=>{
 
@@ -658,7 +810,9 @@ document.querySelectorAll(".copy-btn").forEach(btn=>{
 });
 
 </script>
+
 `;
+
 }
 
 function renderServiceCard(service: Service): string {
