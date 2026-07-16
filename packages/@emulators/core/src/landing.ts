@@ -989,6 +989,62 @@ function renderServiceCard(service: Service): string {
 
 }
 
+function renderHealthScript(): string {
+    return `
+    async function checkHealth(){
+
+    const cards=document.querySelectorAll(".card");
+
+    for(const card of cards){
+
+        const port=card.dataset.port;
+
+        const status=card.querySelector(".healthy");
+
+        const indicator=card.querySelector(".service-icon");
+
+        try{
+
+            const res=await fetch(
+                window.location.protocol+
+                "//"+
+                window.location.hostname+
+                ":"+
+                port
+            );
+
+            if(res.ok){
+
+                status.textContent="Healthy";
+
+                indicator.style.opacity="1";
+
+            }else{
+
+                status.textContent="Offline";
+
+                indicator.style.opacity=".3";
+
+            }
+
+        }catch{
+
+            status.textContent="Offline";
+
+            indicator.style.opacity=".3";
+
+        }
+
+    }
+
+}
+
+checkHealth();
+
+setInterval(checkHealth,5000);
+`;
+}
+
 export function renderLandingPage(): string {
 
     return `
@@ -1010,6 +1066,8 @@ ${renderSystemInfo()}
 ${renderFooter()}
 
 ${renderScripts()}
+
+${renderHealthScript()}
 
 </body>
 
