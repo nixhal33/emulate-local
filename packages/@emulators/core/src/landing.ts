@@ -786,58 +786,70 @@ return `
 
 <script>
 
-function buildUrl(port,path){
+function buildUrl(port,path=""){
 
-    const protocol=window.location.protocol;
-
-    const host=window.location.hostname;
-
-    return protocol+"//"+host+":"+port+path;
-
-}
-
-async function refreshHealth(){
-
-    try{
-
-        const res=await fetch("/health");
-
-        const data=await res.json();
-
-        document.getElementById("service-count").textContent=data.services.length;
-
-        document.getElementById("platform-version").textContent=data.version;
-
-        document.getElementById("platform-status").textContent=data.status;
-
-        document.getElementById("running-services").textContent=
-            data.services.length+"/"+data.services.length;
-
-        document.getElementById("runtime").textContent=data.runtime;
-
-        document.getElementById("system-version").textContent=data.version;
-
-    }catch(err){
-
-        console.error(err);
-
-    }
+    return window.location.protocol+
+        "//"+
+        window.location.hostname+
+        ":"+
+        port+
+        path;
 
 }
 
-refreshHealth();
+async function checkHealth(){
 
-setInterval(refreshHealth,5000);
+    document.querySelectorAll(".card").forEach(async(card)=>{
+
+        const port=card.dataset.port;
+
+        const status=card.querySelector(".healthy");
+
+        const icon=card.querySelector(".service-icon");
+
+        try{
+
+            const response=await fetch(buildUrl(port));
+
+            if(response.ok){
+
+                status.textContent="Healthy";
+
+                status.style.color="#22c55e";
+
+                icon.style.opacity="1";
+
+            }else{
+
+                throw new Error();
+
+            }
+
+        }catch{
+
+            status.textContent="Offline";
+
+            status.style.color="#ef4444";
+
+            icon.style.opacity=".35";
+
+        }
+
+    });
+
+}
 
 document.querySelectorAll(".dashboard-btn").forEach(btn=>{
 
     btn.addEventListener("click",()=>{
 
-        const port=btn.dataset.port;
-
-        const dashboard=btn.dataset.dashboard;
-
-        window.open(buildUrl(port,dashboard),"_blank");
+        window.open(
+            buildUrl(
+                btn.dataset.port,
+                btn.dataset.dashboard
+            ),
+            "_blank"
+        );
 
     });
 
@@ -847,25 +859,27 @@ document.querySelectorAll(".copy-btn").forEach(btn=>{
 
     btn.addEventListener("click",async()=>{
 
-        const port=btn.dataset.port;
-
-        const url=buildUrl(port,"");
+        const url=buildUrl(btn.dataset.port);
 
         await navigator.clipboard.writeText(url);
 
-        const original=btn.innerHTML;
+        const old=btn.innerHTML;
 
         btn.innerHTML="Copied ✓";
 
         setTimeout(()=>{
 
-            btn.innerHTML=original;
+            btn.innerHTML=old;
 
         },1500);
 
     });
 
 });
+
+checkHealth();
+
+setInterval(checkHealth,5000);
 
 </script>
 
