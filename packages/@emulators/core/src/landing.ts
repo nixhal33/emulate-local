@@ -877,7 +877,9 @@ function renderServiceCard(service: Service): string {
 
     return `
 
-<div class="card">
+<div
+    class="card"
+    data-port="${service.port}">
 
     <div class="card-top">
 
