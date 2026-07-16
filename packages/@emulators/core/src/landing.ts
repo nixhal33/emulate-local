@@ -1,7 +1,11 @@
 interface Service {
+  
   id: string;
+  
   name: string;
+  
   port: number;
+  
   color: string;
 
   description: string;
@@ -129,7 +133,7 @@ const SERVICES: Service[] = [
 
     docs: "https://docs.stripe.com/api",
 
-    dashboard: "/",
+    dashboard: "/v1/products",
 
     apiExplorer: "/v1/products",
   },
