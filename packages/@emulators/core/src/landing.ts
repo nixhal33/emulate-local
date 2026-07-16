@@ -399,6 +399,18 @@ background:#475569;
 background:#334155;
 }
 
+.endpoint{
+
+    margin-bottom:18px;
+
+    font-size:.82rem;
+
+    color:#60a5fa;
+
+    font-family:monospace;
+
+}
+
 </style>
 
 </head>
@@ -601,64 +613,52 @@ function renderFooter(): string {
 }
 
 function renderScripts(): string {
-
-return `
-
+  return `
 <script>
 
-function buildUrl(port,path=""){
-
-    return window.location.protocol
-        +"//"
-        +window.location.hostname
-        +":"
-        +port
-        +path;
-
+function buildUrl(port){
+    return window.location.protocol + "//" +
+           window.location.hostname +
+           ":" + port;
 }
 
 document.querySelectorAll(".dashboard-btn").forEach(btn=>{
 
-    btn.onclick=()=>{
+    btn.addEventListener("click",()=>{
 
-        window.open(
-            buildUrl(
-                btn.dataset.port,
-                btn.dataset.dashboard
-            ),
-            "_blank"
-        );
+        const port = btn.dataset.port;
+        const dashboard = btn.dataset.dashboard || "";
 
-    };
+        window.open(buildUrl(port)+dashboard,"_blank");
+
+    });
 
 });
 
 document.querySelectorAll(".copy-btn").forEach(btn=>{
 
-    btn.onclick=async()=>{
+    btn.addEventListener("click",async()=>{
 
-        const url=buildUrl(btn.dataset.port);
+        const url = buildUrl(btn.dataset.port);
 
         await navigator.clipboard.writeText(url);
 
-        const old=btn.innerHTML;
+        const original = btn.innerHTML;
 
-        btn.innerHTML="Copied";
+        btn.innerHTML="✅ Copied";
 
         setTimeout(()=>{
 
-            btn.innerHTML=old;
+            btn.innerHTML=original;
 
         },1500);
 
-    };
+    });
 
 });
 
 </script>
-
 `;
-
 }
 
 function renderServiceCard(service: Service): string {
@@ -682,9 +682,9 @@ function renderServiceCard(service: Service): string {
 
     <h2>${service.name}</h2>
 
-    <p class="description">
+    <p class="endpoint">
 
-        ${service.description}
+        http://localhost:${service.port}
 
     </p>
 
@@ -692,7 +692,12 @@ function renderServiceCard(service: Service): string {
 
         ${service.features.map(feature => `
 
-            <span class="feature">
+            <span
+                class="feature"
+                style="
+                    border:1px solid ${service.color};
+                    color:${service.color};
+                ">
 
                 ${feature}
 
