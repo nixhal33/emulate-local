@@ -719,10 +719,9 @@ function renderServiceCard(service: Service): string {
 
             <strong>
 
-                ${service.port}
+                localhost:${service.port}
 
             </strong>
-
         </div>
 
         <div>
