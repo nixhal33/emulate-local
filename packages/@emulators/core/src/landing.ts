@@ -23,7 +23,12 @@ interface Service {
   apiExplorer: string;
 }
 
-const SERVICES: Service[] = [
+interface ServiceHealth extends Service {
+    url: string;
+    healthy: boolean;
+}
+
+const SERVICES: ServiceHealth[] = [
   {
     id: "google",
     name: "Google",
@@ -49,6 +54,9 @@ const SERVICES: Service[] = [
       "/o/oauth2/v2/auth?client_id=example-google-client.apps.googleusercontent.com&redirect_uri=http://localhost:3000/api/auth/callback/google&response_type=code",
 
     apiExplorer: "/oauth2/v2/userinfo",
+
+    url: "http://localhost:4000",
+    healthy: true,
   },
 
   {
@@ -78,6 +86,8 @@ const SERVICES: Service[] = [
       "/auth/authorize?client_id=com.example.web&redirect_uri=http://localhost:3000/api/auth/callback/apple&response_type=code",
 
     apiExplorer: "/.well-known/openid-configuration",
+    url: "http://localhost:4001",
+    healthy: true,
   },
 
   {
@@ -107,6 +117,8 @@ const SERVICES: Service[] = [
     dashboard: "/inbox",
 
     apiExplorer: "/emails",
+    url: "http://localhost:4002",
+    healthy: true,
   },
 
   {
@@ -136,6 +148,8 @@ const SERVICES: Service[] = [
     dashboard: "/v1/products",
 
     apiExplorer: "/v1/products",
+    url: "http://localhost:4003",
+    healthy: true,
   },
 
   {
@@ -165,8 +179,11 @@ const SERVICES: Service[] = [
     dashboard: "/",
 
     apiExplorer: "/2010-04-01/Accounts.json",
+    url: "http://localhost:4004",
+    healthy: true,
   },
 ];
+
 
 function renderHead(): string {
   return `
