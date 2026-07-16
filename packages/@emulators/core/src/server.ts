@@ -96,6 +96,41 @@ export function createServer(plugin: ServicePlugin, options: ServerOptions = {})
   return c.html(renderLandingPage());
   });
 
+  app.get("/health", (c) => {
+  return c.json({
+    status: "healthy",
+    version: "v0.8.0",
+    runtime: "Node.js",
+    services: [
+      {
+        name: "Google",
+        port: 4000,
+        status: "healthy",
+      },
+      {
+        name: "Apple",
+        port: 4001,
+        status: "healthy",
+      },
+      {
+        name: "Resend",
+        port: 4002,
+        status: "healthy",
+      },
+      {
+        name: "Stripe",
+        port: 4003,
+        status: "healthy",
+      },
+      {
+        name: "Twilio",
+        port: 4004,
+        status: "healthy",
+      },
+    ],
+  });
+});
+
   app.notFound((c) =>
     c.json(
       {

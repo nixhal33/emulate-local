@@ -639,9 +639,11 @@ Develop, test and debug integrations without relying on external services.
 
 <div class="hero-right">
 
+<div class="hero-right">
+
 <div class="stat-card">
 
-<h2>5</h2>
+<h2 id="service-count">-</h2>
 
 <span>Services</span>
 
@@ -649,7 +651,7 @@ Develop, test and debug integrations without relying on external services.
 
 <div class="stat-card">
 
-<h2>100%</h2>
+<h2 id="local-percent">100%</h2>
 
 <span>Local</span>
 
@@ -657,7 +659,7 @@ Develop, test and debug integrations without relying on external services.
 
 <div class="stat-card">
 
-<h2>v0.8.0</h2>
+<h2 id="platform-version">-</h2>
 
 <span>Version</span>
 
@@ -665,7 +667,7 @@ Develop, test and debug integrations without relying on external services.
 
 <div class="stat-card">
 
-<h2>Healthy</h2>
+<h2 id="platform-status">-</h2>
 
 <span>Status</span>
 
@@ -695,45 +697,47 @@ function renderServices(): string {
 
 function renderSystemInfo(): string {
 
-    const healthy = SERVICES.filter(s => s.status === "Healthy").length;
-
-    return `
+return `
 
 <section class="system">
 
-    <h2>
+<h2>System Information</h2>
 
-        System Information
+<ul>
 
-    </h2>
+<li>
 
-    <ul>
+Running Services :
 
-        <li>
+<strong id="running-services">-</strong>
 
-            Running Services : ${healthy}/${SERVICES.length}
+</li>
 
-        </li>
+<li>
 
-        <li>
+Docker :
 
-            Docker : Healthy
+<strong id="docker-status">Healthy</strong>
 
-        </li>
+</li>
 
-        <li>
+<li>
 
-            Runtime : Node.js
+Runtime :
 
-        </li>
+<strong id="runtime">-</strong>
 
-        <li>
+</li>
 
-            Platform Version : v0.8.0
+<li>
 
-        </li>
+Platform Version :
 
-    </ul>
+<strong id="system-version">-</strong>
+
+</li>
+
+</ul>
 
 </section>
 
@@ -749,7 +753,7 @@ function renderFooter(): string {
 
     <p>
 
-        Emulate Local Platform • Built with ❤️
+        Emulate Local Platform • Built with ❤️ By ❤️❤️❤️Nixhal Koirala❤️❤️❤️
 
     </p>
 
@@ -774,6 +778,39 @@ function buildUrl(port,path){
     return protocol+"//"+host+":"+port+path;
 
 }
+
+async function refreshHealth(){
+
+    try{
+
+        const res=await fetch("/health");
+
+        const data=await res.json();
+
+        document.getElementById("service-count").textContent=data.services.length;
+
+        document.getElementById("platform-version").textContent=data.version;
+
+        document.getElementById("platform-status").textContent=data.status;
+
+        document.getElementById("running-services").textContent=
+            data.services.length+"/"+data.services.length;
+
+        document.getElementById("runtime").textContent=data.runtime;
+
+        document.getElementById("system-version").textContent=data.version;
+
+    }catch(err){
+
+        console.error(err);
+
+    }
+
+}
+
+refreshHealth();
+
+setInterval(refreshHealth,5000);
 
 document.querySelectorAll(".dashboard-btn").forEach(btn=>{
 
