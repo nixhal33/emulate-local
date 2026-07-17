@@ -16,8 +16,6 @@ services:
       HOST: 0.0.0.0
       PORT: 4000
       PUBLIC_HOST: localhost
-    volumes:
-      - ./emulate.config.yaml:/app/emulate.config.yaml:ro
     command:
       ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]
     healthcheck:
