@@ -4,7 +4,7 @@ services:
   emulate:
     container_name: emulator-five
 
-    image: emulate:v.1.0.0
+    image: emulate:v2.0.0
 
     build:
       context: .
@@ -24,8 +24,7 @@ services:
       HOST: 0.0.0.0
       PORT: 4000
 
-      # Change this in Coolify
-      PUBLIC_HOST: 192.168.50.105
+      PUBLIC_HOST: localhost
 
     volumes:
       - ./emulate.config.yaml:/app/emulate.config.yaml:ro
