@@ -656,8 +656,6 @@ Develop, test and debug integrations without relying on external services.
 
 <div class="hero-right">
 
-<div class="hero-right">
-
 <div class="stat-card">
 
 <h2 id="service-count">-</h2>
@@ -723,13 +721,9 @@ return `
 <ul>
 
 <li>
-
 Running Services :
-
 <strong id="running-services">-</strong>
-
 </li>
-
 <li>
 
 Docker :
@@ -739,19 +733,13 @@ Docker :
 </li>
 
 <li>
-
 Runtime :
-
 <strong id="runtime">-</strong>
-
 </li>
 
 <li>
-
 Platform Version :
-
-<strong id="system-version">-</strong>
-
+<strong id="platform-version">-</strong>
 </li>
 
 </ul>
@@ -1005,65 +993,9 @@ function renderServiceCard(service: Service): string {
 
 }
 
-function renderHealthScript(): string {
-    return `
-    async function checkHealth(){
-
-    const cards=document.querySelectorAll(".card");
-
-    for(const card of cards){
-
-        const port=card.dataset.port;
-
-        const status=card.querySelector(".healthy");
-
-        const indicator=card.querySelector(".service-icon");
-
-        try{
-
-            const res=await fetch(
-                window.location.protocol+
-                "//"+
-                window.location.hostname+
-                ":"+
-                port
-            );
-
-            if(res.ok){
-
-                status.textContent="Healthy";
-
-                indicator.style.opacity="1";
-
-            }else{
-
-                status.textContent="Offline";
-
-                indicator.style.opacity=".3";
-
-            }
-
-        }catch{
-
-            status.textContent="Offline";
-
-            indicator.style.opacity=".3";
-
-        }
-
-    }
-
-}
-
-checkHealth();
-
-setInterval(checkHealth,5000);
-`;
-}
-
 export function renderLandingPage(): string {
 
-    return `
+return `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1082,8 +1014,6 @@ ${renderSystemInfo()}
 ${renderFooter()}
 
 ${renderScripts()}
-
-${renderHealthScript()}
 
 </body>
 
