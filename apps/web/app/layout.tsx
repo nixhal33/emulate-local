@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
 };
 
-function Header({ stars }: { stars?: string }) {
+async function Header({ stars }: { stars?: string }) {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm dark:bg-neutral-950/90">
       <div className="flex h-14 items-center justify-between px-4 gap-6">

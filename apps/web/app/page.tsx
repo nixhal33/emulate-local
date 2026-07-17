@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { GeistPixelSquare } from "geist/font/pixel";
 import { HeroTerminal } from "@/components/hero-terminal";
+import { verifySessionValue } from "@/lib/auth-shared";
 
-export default function LandingPage() {
+function LandingPage() {
   return (
     <div className="relative">
       {/* Hero */}
@@ -202,4 +205,15 @@ afterAll(() => github.close())`}</code>
       </footer>
     </div>
   );
+}
+
+export default async function RootPage() {
+  const cookieStore = await cookies();
+  const authed = await verifySessionValue(cookieStore.get("emulate-admin-session")?.value);
+
+  if (!authed) {
+    redirect("/login");
+  }
+
+  return <LandingPage />;
 }

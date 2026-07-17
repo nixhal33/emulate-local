@@ -28,6 +28,29 @@ interface LoadResult {
   source: string;
 }
 
+function loadEnvFile(): void {
+  const envPath = resolve(".env");
+  if (!existsSync(envPath)) return;
+
+  const content = readFileSync(envPath, "utf-8");
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+
+    const idx = line.indexOf("=");
+    if (idx === -1) continue;
+
+    const key = line.slice(0, idx).trim();
+    if (!key || process.env[key] !== undefined) continue;
+
+    let value = line.slice(idx + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
 function loadSeedConfig(seedPath?: string): LoadResult | null {
   if (seedPath) {
     const fullPath = resolve(seedPath);
@@ -77,6 +100,7 @@ function inferServicesFromConfig(config: SeedConfig): ServiceName[] | null {
 }
 
 export async function startCommand(options: StartOptions): Promise<void> {
+  loadEnvFile();
   const { port: basePort } = options;
 
   if (options.portless && options.baseUrl) {

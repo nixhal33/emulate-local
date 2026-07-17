@@ -1,0 +1,78 @@
+###############################################################################
+# OpenWA Integration
+###############################################################################
+
+# Enable / Disable WhatsApp integration
+OPENWA_ENABLED=true
+
+# OpenWA Base URL
+OPENWA_BASE_URL=https://tool.techhaus.dev
+# Dev Example:
+# OPENWA_BASE_URL=http://192.168.50.105:2500
+
+# OpenWA API Key
+OPENWA_API_KEY=owa_k1_8259f82ea58647184af2c97f163a369e83b0d6bc593defebb9309ee5daafd6af
+
+# WhatsApp Session ID
+OPENWA_SESSION_ID=b175279e-7782-4e72-838b-668cf9f91b62
+
+###############################################################################
+# HTTP Configuration
+###############################################################################
+
+# Request timeout (seconds)
+OPENWA_TIMEOUT=30
+
+# Retry configuration
+OPENWA_MAX_RETRIES=5
+OPENWA_RETRY_DELAY=5
+
+###############################################################################
+# WhatsApp Configuration
+###############################################################################
+
+# Default country code (optional)
+OPENWA_DEFAULT_COUNTRY_CODE=+977
+
+# WhatsApp Chat ID suffix
+OPENWA_CHAT_SUFFIX=@c.us
+
+###############################################################################
+# Webhook Configuration (Optional)
+###############################################################################
+
+OPENWA_WEBHOOK_ENABLED=false
+OPENWA_WEBHOOK_URL=
+OPENWA_WEBHOOK_SECRET=change_this_secret
+
+###############################################################################
+# Logging
+###############################################################################
+
+OPENWA_LOG_LEVEL=info
+OPENWA_DEBUG=false
+
+###############################################################################
+# Health Check
+###############################################################################
+
+OPENWA_HEALTHCHECK_INTERVAL=60
+
+###############################################################################
+# Rate Limiting
+###############################################################################
+
+OPENWA_MESSAGES_PER_SECOND=5
+
+###############################################################################
+# Future Multi-Session Support (Optional)
+###############################################################################
+
+OPENWA_NOTIFICATION_SESSION=b175279e-7782-4e72-838b-668cf9f91b62
+OPENWA_SUPPORT_SESSION=b175279e-7782-4e72-838b-668cf9f91b62
+
+###############################################################################
+# Media (Optional)
+###############################################################################
+
+OPENWA_MEDIA_BASE_URL=

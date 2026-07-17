@@ -79,7 +79,7 @@ const SERVICES: ServiceHealth[] = [
     version: PLATFORM_VERSION,
     status: "Healthy",
     docs: "https://docs.stripe.com/api",
-    dashboard: "/v1/products",
+    dashboard: "/checkout/sessions_id", 
     apiExplorer: "/v1/products",
     url: "http://localhost:4003",
     healthy: true,
@@ -282,6 +282,21 @@ function renderHead(): string {
       border-radius: var(--radius-xl);
       backdrop-filter: blur(18px);
       box-shadow: var(--shadow);
+    }
+
+    .login-panel {
+      font-family: "Aptos", "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .login-panel .eyebrow {
+      font-family: "Aptos", "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .login-panel h2 {
+      font-family: "Aptos Display", "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.05em;
     }
 
     .hero-main {
@@ -865,8 +880,48 @@ function renderSystemInfo(): string {
 function renderFooter(): string {
   return `
 <footer class="footer">
+  <form action="/logout" method="post">
+    <button class="service-button secondary" type="submit" style="max-width: 140px; margin: 0 auto 12px; display: inline-flex;">
+      Logout
+    </button>
+  </form>
   Emulate Control Center for local API development
 </footer>
+`;
+}
+
+export function renderLoginPage(): string {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+${renderHead()}
+<body>
+  <div class="page-shell">
+    <div class="page" style="display:grid;place-items:center;min-height:100vh;">
+      <section class="hero-panel hero-main login-panel" style="width:min(760px,100%);">
+        <div class="eyebrow">Welcome to Emulate-5</div>
+        <h2>Please enter your password to continue.</h2>
+        <p>
+          Access is restricted to the local operator account. Sign in to open the dashboard, review the emulators, and
+          continue your workflow.
+        </p>
+        <form action="/login" method="post" style="margin-top:24px;display:grid;gap:14px;max-width:420px;">
+          <label>
+            <div class="stat-label" style="margin-bottom:8px;">Username</div>
+            <input name="username" value="admin" readonly style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(15,23,42,.45);color:var(--text);" />
+          </label>
+          <label>
+            <div class="stat-label" style="margin-bottom:8px;">Password</div>
+            <input name="password" type="password" autocomplete="current-password" required style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:rgba(15,23,42,.45);color:var(--text);" />
+          </label>
+          <button class="action-button primary" type="submit">Enter Dashboard</button>
+        </form>
+        <p class="stat-subtext" style="margin-top:16px;">Enter the private admin password to unlock the dashboard.</p>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
 `;
 }
 

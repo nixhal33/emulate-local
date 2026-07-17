@@ -2,7 +2,7 @@ import { Hono, cors } from "./http.js";
 import { Store } from "./store.js";
 import { WebhookDispatcher } from "./webhooks.js";
 import { createApiErrorHandler, createErrorHandler } from "./middleware/error-handler.js";
-import { renderLandingPage } from "./landing.js";
+import { renderLandingPage, renderLoginPage } from "./landing.js";
 import {
   authMiddleware,
   type AuthFallback,
@@ -12,6 +12,7 @@ import {
 } from "./middleware/auth.js";
 import type { ServicePlugin } from "./plugin.js";
 import { registerFontRoutes } from "./fonts.js";
+import { buildSessionCookie, clearSessionCookie, createSession, verifySessionCookie } from "./auth-session.js";
 
 export interface ServerOptions {
   port?: number;
@@ -93,7 +94,30 @@ export function createServer(plugin: ServicePlugin, options: ServerOptions = {})
   plugin.register(app, store, webhooks, baseUrl, tokenMap);
 
   app.get("/", (c) => {
-  return c.html(renderLandingPage());
+    const authed = verifySessionCookie(c.req.header("cookie"));
+    if (!authed) return c.redirect("/login");
+    return c.html(renderLandingPage());
+  });
+
+  app.get("/login", (c) => {
+    return c.html(renderLoginPage());
+  });
+
+  app.post("/login", async (c) => {
+    const body = await c.req.parseBody();
+    const username = String(body.username ?? "");
+    const password = String(body.password ?? "");
+    const session = createSession(username, password);
+    if (!session) return c.redirect("/login?error=1");
+    const response = c.redirect("/", 302);
+    response.headers.set("Set-Cookie", buildSessionCookie(session));
+    return response;
+  });
+
+  app.post("/logout", (c) => {
+    const response = c.redirect("/login", 302);
+    response.headers.set("Set-Cookie", clearSessionCookie());
+    return response;
   });
 
   app.get("/health", (c) => {
