@@ -5,23 +5,45 @@ services:
     container_name: emulator-five
     image: kubenix/emulate:finale
     restart: unless-stopped
+    
     ports:
-      - "4000:4000" # GOOGLE
-      - "4001:4001" # APPLE
-      - "4002:4002" # RESEND
-      - "4003:4003" # STRIPE
-      - "4004:4004" # TWILIO
+      - "4000:4000"
+      - "4001:4001"
+      - "4002:4002"
+      - "4003:4003"
+      - "4004:4004"
+
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 4000
-      PUBLIC_HOST: localhost
+      PUBLIC_HOST: vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io
+
     command:
       ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]
+
     healthcheck:
-      test:
-        ["CMD","node","-e","fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"]
+      test: ["CMD","node","-e","fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.gzip.compress=true"
+      - "traefik.http.routers.emu-4000.rule=Host(`vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io`) && PathPrefix(`/`)"
+      - "traefik.http.routers.emu-4000.service=emu-4000-svc"
+      - "traefik.http.services.emu-4000-svc.loadbalancer.server.port=4000"
+      - "traefik.http.routers.emu-4001.rule=Host(`vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io`) && PathPrefix(`/api/apple`)"
+      - "traefik.http.routers.emu-4001.service=emu-4001-svc"
+      - "traefik.http.services.emu-4001-svc.loadbalancer.server.port=4001"
+      - "traefik.http.routers.emu-4002.rule=Host(`vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io`) && PathPrefix(`/api/resend`)"
+      - "traefik.http.routers.emu-4002.service=emu-4002-svc"
+      - "traefik.http.services.emu-4002-svc.loadbalancer.server.port=4002"
+      - "traefik.http.routers.emu-4003.rule=Host(`vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io`) && PathPrefix(`/api/stripe`)"
+      - "traefik.http.routers.emu-4003.service=emu-4003-svc"
+      - "traefik.http.services.emu-4003-svc.loadbalancer.server.port=4003"
+      - "traefik.http.routers.emu-4004.rule=Host(`vfnutze7c7n6btoc8a3513gx.202.166.217.236.sslip.io`) && PathPrefix(`/api/twilio`)"
+      - "traefik.http.routers.emu-4004.service=emu-4004-svc"
+      - "traefik.http.services.emu-4004-svc.loadbalancer.server.port=4004"
