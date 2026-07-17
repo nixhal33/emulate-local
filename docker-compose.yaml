@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  emulate:
+    env_file:
+      - .env
+    container_name: emulator-five
+
+    image: emulate:finale
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    restart: unless-stopped
+
+    ports:
+      - "4000:4000" # GOOGLE
+      - "4001:4001" # APPLE
+      - "4002:4002" # RESEND
+      - "4003:4003" # STRIPE
+      - "4004:4004" # TWILIO
+
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 4000
+      PUBLIC_HOST: localhost
+
+    volumes:
+      - ./emulate.config.yaml:/app/emulate.config.yaml:ro
+
+    command:
+      ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]
+
+    healthcheck:
+      test:
+        ["CMD","node","-e","fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
