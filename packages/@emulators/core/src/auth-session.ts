@@ -9,12 +9,25 @@ function sessionSecret(): string {
   return process.env.AUTH_SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? "emulate-dev-secret";
 }
 
+function useSecureCookies(): boolean {
+  const explicit = process.env.AUTH_COOKIE_SECURE;
+  if (explicit === "true") return true;
+  if (explicit === "false") return false;
+
+  const publicHost = (process.env.PUBLIC_HOST ?? "").toLowerCase();
+  if (!publicHost || publicHost === "localhost" || publicHost === "127.0.0.1") {
+    return false;
+  }
+
+  return true;
+}
+
 function sign(payload: string): string {
   return createHmac("sha256", sessionSecret()).update(payload).digest("base64url");
 }
 
 export function buildSessionCookie(value: string, maxAgeSeconds = SESSION_TTL_SECONDS): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  const secure = useSecureCookies() ? "; Secure" : "";
   const httpOnly = "; HttpOnly";
   const sameSite = "; SameSite=Lax";
   const path = "; Path=/";
@@ -57,4 +70,3 @@ export function verifySessionCookie(cookieHeader?: string | null): boolean {
   const b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
-

@@ -6,7 +6,7 @@ services:
       - .env
     container_name: emulator-five
 
-    image: emulate:v3.0.0
+    image: emulate:finale
 
     build:
       context: .
