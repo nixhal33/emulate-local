@@ -1,16 +1,21 @@
-version: "3.9"
+version: '3.8'
 
 services:
   emulate:
-    container_name: emulator-five
-    image: kubenix/emulate:finale
+    container_name: emulate-V
+    Build:
+      context: .
+      dockerfile: Dockerfile
+    image: emulate:V
     restart: unless-stopped
+    
     ports:
-      - "4000" # GOOGLE
-      - "4001" # APPLE
-      - "4002" # RESEND
-      - "4003" # STRIPE
-      - "4004" # TWILIO
+      - "80:80"
+      - "4001:4001"
+      - "4002:4002"
+      - "4003:4003"
+      - "4004:4004"
+
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -18,9 +23,9 @@ services:
       PUBLIC_HOST: localhost
     command:
       ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]
+
     healthcheck:
-      test:
-        ["CMD","node","-e","fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"]
+      test: ["CMD","node","-e","fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3

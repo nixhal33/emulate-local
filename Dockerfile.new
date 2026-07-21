@@ -2,16 +2,11 @@
 # Stage 1 - Build
 # ===========================
 FROM node:24-bookworm-slim AS builder
-
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
 RUN corepack enable
-
 WORKDIR /app
-
 COPY . .
-
 RUN pnpm install --frozen-lockfile
 RUN pnpm build
 
@@ -19,34 +14,20 @@ RUN pnpm build
 # Stage 2 - Runtime
 # ===========================
 FROM node:24-bookworm-slim
-
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-
 RUN corepack enable
-
 WORKDIR /app
-
 COPY --from=builder /app /app
 
-# Runtime Environment
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4000
 ENV PUBLIC_HOST=localhost
 
-# Expose Emulator Ports
-EXPOSE 4000
-EXPOSE 4001
-EXPOSE 4002
-EXPOSE 4003
-EXPOSE 4004
+EXPOSE 80 4000 4001 4002 4003 4004
 
-# Health Check
-HEALTHCHECK --interval=30s \
-            --timeout=5s \
-            --start-period=10s \
-            --retries=3 \
-CMD node -e "fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:4000').then(r=>process.exit(r.ok||r.status===404?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node","packages/emulate/dist/index.js","start","--seed","emulate.config.yaml"]
